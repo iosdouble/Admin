@@ -146,6 +146,7 @@ public class VelocityUtils
         }
         templates.add("vm/html/add.html.vm");
         templates.add("vm/html/edit.html.vm");
+        templates.add("vm/html/details.html.vm");
         templates.add("vm/sql/sql.vm");
         return templates;
     }
@@ -218,6 +219,11 @@ public class VelocityUtils
         {
             fileName = StringUtils.format("{}/edit.html", htmlPath);
         }
+        else if (template.contains("details.html.vm"))
+        {
+            fileName = StringUtils.format("{}/details.html", htmlPath);
+        }
+
         else if (template.contains("sql.vm"))
         {
             fileName = businessName + "Menu.sql";
