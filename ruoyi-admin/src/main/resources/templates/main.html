@@ -308,10 +308,36 @@
             </div>
         </div>
     </div>
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>住房类别</h5>
+                </div>
+                <div class="ibox-content">
+                    <div class="echarts" id="houseType"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>结构类型</h5>
+                </div>
+                <div class="ibox-content">
+                    <div class="echarts" id="structureType"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 <script th:src="@{/js/jquery.min.js}"></script>
 <script th:src="@{/js/bootstrap.min.js}"></script>
 <script th:src="@{/ajax/libs/layer/layer.min.js}"></script>
+<th:block th:include="include :: footer"/>
+<th:block th:include="include :: peity-js"/>
+<th:block th:include="include :: sparkline-js"/>
+<th:block th:include="include :: echarts-js"/>
 <script type="text/javascript">
     $('#pay-qrcode').click(function () {
         var html = $(this).html();
@@ -324,6 +350,217 @@
             content: html
         });
     });
+    function initData(elementId, itemArray, dataArray, title) {
+        var pieChart = echarts.init(document.getElementById(elementId));
+        var pieoption = {
+            title: {
+                text: title,
+                subtext: '数据',
+                x: 'center'
+            },
+            tooltip: {
+                trigger: 'item',
+                formatter: "{a} <br/>{b} : {c} ({d}%)"
+            },
+            legend: {
+                orient: 'vertical',
+                x: 'left',
+                data: itemArray
+            },
+            calculable: true,
+            series: [
+                {
+                    name: '访问来源',
+                    type: 'pie',
+                    radius: '55%',
+                    center: ['50%', '60%'],
+                    data: dataArray
+                }
+            ]
+        };
+        pieChart.setOption(pieoption);
+        $(window).resize(pieChart.resize);
+    }
+
+    $(document).ready(function () {
+
+        var houseTypeItem = ['长期闲置房', '安全住房', '异地搬迁', '废弃危房', '其他']
+        var houseData = [1100,11,112,121,1212];
+        houseTypeItem.forEach(function (val, index, arr) {
+            var obj = {
+                value: val,
+                name: houseTypeItem[index]
+            }
+            houseData.push(obj)
+        })
+        initData("houseType", houseTypeItem, houseData, '住房类别')
+
+        var structureTypeItem = ['砖石结构(预制板)', '砖石结构(非预制板)', '土木结构', '混凝土结构', '窑洞', '钢结构', '混杂结构', '其他']
+        var houseData = [112,12,12,12,12,34,543,34];
+        structureTypeItem.forEach(function (val, index, arr) {
+            var obj = {
+                value: val,
+                name: structureTypeItem[index]
+            }
+            houseData.push(obj)
+        })
+        initData("structureType", structureTypeItem, houseData, '结构类型')
+
+        var offsetId = ""
+        // 发送Ajax请求
+        var config = {
+            url: "/index/system/houseData",
+            type: "get",
+            success: function (result) {
+                var houseTypeItem = ['长期闲置房', '安全住房', '异地搬迁', '废弃危房', '其他']
+                var houseData = [];
+                result.data.houseType.forEach(function (val, index, arr) {
+                    var obj = {
+                        value: val,
+                        name: houseTypeItem[index]
+                    }
+                    houseData.push(obj)
+                })
+                initData("houseType", houseTypeItem, houseData, '住房类别')
+
+                var structureTypeItem = ['砖石结构(预制板)', '砖石结构(非预制板)', '土木结构', '混凝土结构', '窑洞', '钢结构', '混杂结构', '其他']
+                var houseData = [];
+                result.data.structureType.forEach(function (val, index, arr) {
+                    var obj = {
+                        value: val,
+                        name: structureTypeItem[index]
+                    }
+                    houseData.push(obj)
+                })
+                initData("structureType", structureTypeItem, houseData, '结构类型')
+
+                var buildTypeItem = ['自行建造', '建筑工匠建造', '有资质的施工队伍建造', '其他']
+                var houseData = [];
+                result.data.buildType.forEach(function (val, index, arr) {
+                    var obj = {
+                        value: val,
+                        name: buildTypeItem[index]
+                    }
+                    houseData.push(obj)
+                })
+                initData("buildType", buildTypeItem, houseData, '建造方式')
+
+                var landTypeItem = ['宅基地', '非宅基地']
+                var houseData = [];
+                result.data.landType.forEach(function (val, index, arr) {
+                    var obj = {
+                        value: val,
+                        name: landTypeItem[index]
+                    }
+                    houseData.push(obj)
+                })
+                initData("landType", landTypeItem, houseData, '土地性质')
+
+
+                var isProveItem = ['有无宅基地手续', '有无规划建设手续', '有无竣工验收手续', '有无房屋登记手续', '其他']
+                var houseData = [];
+                result.data.isProve.forEach(function (val, index, arr) {
+                    var obj = {
+                        value: val,
+                        name: isProveItem[index]
+                    }
+                    houseData.push(obj)
+                })
+                initData("isProve", isProveItem, houseData, '审批手续')
+
+
+                var rebuildUsedItem = ['餐饮服务', '民俗宾馆', '批发零售', '医疗卫生', '休闲娱乐', '生产加工', '仓储物流', '养老服务', '其他']
+                var houseData = [];
+                result.data.rebuildUsed.forEach(function (val, index, arr) {
+                    var obj = {
+                        value: val,
+                        name: rebuildUsedItem[index]
+                    }
+                    houseData.push(obj)
+                })
+                initData("rebuildUsed", rebuildUsedItem, houseData, '改造用途')
+            }
+        };
+        // $.ajax(config)
+    });
+
+    function selectDept() {
+        var cityId = $('#deptId').val();
+        var config = {
+            url: "/index/system/houseData/"+cityId,
+            type: "get",
+            success: function (result) {
+                var houseTypeItem = ['长期闲置房', '安全住房', '异地搬迁', '废弃危房', '其他']
+                var houseData = [];
+                result.data.houseType.forEach(function (val, index, arr) {
+                    var obj = {
+                        value: val,
+                        name: houseTypeItem[index]
+                    }
+                    houseData.push(obj)
+                })
+                initData("houseType", houseTypeItem, houseData, '住房类别')
+
+                var structureTypeItem = ['砖石结构(预制板)', '砖石结构(非预制板)', '土木结构', '混凝土结构', '窑洞', '钢结构', '混杂结构', '其他']
+                var houseData = [];
+                result.data.structureType.forEach(function (val, index, arr) {
+                    var obj = {
+                        value: val,
+                        name: structureTypeItem[index]
+                    }
+                    houseData.push(obj)
+                })
+                initData("structureType", structureTypeItem, houseData, '结构类型')
+
+                var buildTypeItem = ['自行建造', '建筑工匠建造', '有资质的施工队伍建造', '其他']
+                var houseData = [];
+                result.data.buildType.forEach(function (val, index, arr) {
+                    var obj = {
+                        value: val,
+                        name: buildTypeItem[index]
+                    }
+                    houseData.push(obj)
+                })
+                initData("buildType", buildTypeItem, houseData, '建造方式')
+
+                var landTypeItem = ['宅基地', '非宅基地']
+                var houseData = [];
+                result.data.landType.forEach(function (val, index, arr) {
+                    var obj = {
+                        value: val,
+                        name: landTypeItem[index]
+                    }
+                    houseData.push(obj)
+                })
+                initData("landType", landTypeItem, houseData, '土地性质')
+
+
+                var isProveItem = ['有无宅基地手续', '有无规划建设手续', '有无竣工验收手续', '有无房屋登记手续', '其他']
+                var houseData = [];
+                result.data.isProve.forEach(function (val, index, arr) {
+                    var obj = {
+                        value: val,
+                        name: isProveItem[index]
+                    }
+                    houseData.push(obj)
+                })
+                initData("isProve", isProveItem, houseData, '审批手续')
+
+
+                var rebuildUsedItem = ['餐饮服务', '民俗宾馆', '批发零售', '医疗卫生', '休闲娱乐', '生产加工', '仓储物流', '养老服务', '其他']
+                var houseData = [];
+                result.data.rebuildUsed.forEach(function (val, index, arr) {
+                    var obj = {
+                        value: val,
+                        name: rebuildUsedItem[index]
+                    }
+                    houseData.push(obj)
+                })
+                initData("rebuildUsed", rebuildUsedItem, houseData, '改造用途')
+            }
+        };
+        $.ajax(config)
+    }
 </script>
 </body>
 </html>
