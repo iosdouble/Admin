@@ -130,6 +130,11 @@ public class SysIndexController extends BaseController
         return "main";
     }
 
+    @GetMapping("/system/datasee")
+    public String datasee()
+    {
+        return "datasee/datasee1";
+    }
     // 检查初始密码是否提醒修改
     public boolean initPasswordIsModify(Date pwdUpdateDate)
     {
